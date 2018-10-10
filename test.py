@@ -17,39 +17,6 @@ url = "https://menus.calpolycorporation.org/805kitchen/"
 # for item in soup.find_all('p'):
 #     print(item.format())
 
-TOKEN = 'insert token here'
-
-client = discord.Client()
-
-@client.event
-async def on_message(message):
-    # we do not want the bot to reply to itself
-    if message.author == client.user:
-        return
-
-    if message.content.startswith('!805'):
-        msg = get_message()
-        await client.send_message(message.channel, msg)
-
-
-async def scheduled_message():
-    await client.wait_until_ready()
-    channel = discord.Object(id='insert channel id here')
-    while not client.is_closed:
-        t = datetime.datetime.now()
-        if t.hour == 8 and t.minute == 5:
-            msg = get_message()
-            await client.send_message(channel, msg)
-        await asyncio.sleep(60)
-
-
-@client.event
-async def on_ready():
-    print('Logged in as')
-    print(client.user.name)
-    print(client.user.id)
-    print('------')
-
 
 def get_message():
     r = requests.get(url)
@@ -76,5 +43,4 @@ def get_message():
     return msg
 
 
-client.loop.create_task(scheduled_message())
-client.run(TOKEN)
+print(get_message())
