@@ -29,11 +29,11 @@ async def on_message(message):
         msg = ''
         for s in soup.find_all('p'):
             msg += s.get_text().format(message)
-            msg += '\n'
             # msg = 'Hello {0.author.mention}'.format(message)
-        msg = msg.replace('\t','')
+        msg = msg.replace('\t', '')
         msg = re.sub('\n+', '\n', msg)
         await client.send_message(message.channel, msg)
+
 @client.event
 async def on_ready():
     print('Logged in as')
