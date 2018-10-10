@@ -15,7 +15,7 @@ soup = BeautifulSoup(r.text, 'html.parser')
 # for item in soup.find_all('p'):
 #     print(item.format())
 
-TOKEN = 'XXXXX'
+TOKEN = 'XXXXXX'
 
 client = discord.Client()
 
@@ -27,11 +27,22 @@ async def on_message(message):
 
     if message.content.startswith('!805'):
         msg = ''
-        for s in soup.find_all('p'):
-            msg += s.get_text().format(message)
+        for s in soup.find_all(['h2', 'h4', 'p']):
+            premsg = s.get_text()
+            premsg = premsg.replace('\t', '')
+            premsg = re.sub('\n+', '', premsg)
+            premsg = premsg.strip()
+            if s.name == 'h2':
+                premsg = '\n**' + premsg + '**'
+            elif s.name == 'h4':
+                premsg = '\n\t*' + premsg + '*'
+            elif s.name == 'p':
+                premsg = '\t\t' + premsg
+            premsg += '\n'
+            msg += premsg.format(message)
             # msg = 'Hello {0.author.mention}'.format(message)
-        msg = msg.replace('\t', '')
-        msg = re.sub('\n+', '\n', msg)
+        # msg = msg.replace('\t', '')
+        # msg = re.sub('\n+', '\n', msg)
         await client.send_message(message.channel, msg)
 
 @client.event
