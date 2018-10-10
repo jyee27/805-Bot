@@ -10,8 +10,11 @@ r = requests.get(url)
 soup = BeautifulSoup(r.text, 'html.parser')
 # for s in soup.find_all('p'):
 #     print(s.get_text())
+# s = ''
+# for item in soup.find_all('p'):
+#     print(item.format())
 
-TOKEN = 'XXXXXXXXXXXXXX'
+TOKEN = 'XXXXXXXXX'
 
 client = discord.Client()
 
@@ -22,10 +25,13 @@ async def on_message(message):
         return
 
     if message.content.startswith('!805'):
-        for s in soup.find_all('p'):
-            msg = s.get_text().format(message)
-            # msg = 'Hello {0.author.mention}'.format(message)
-            await client.send_message(message.channel, msg)
+        s = ''
+        for item in soup.find_all('p'):
+            s += item.get_text()
+        # print(s)
+        msg = s.format(message)
+        # msg = 'Hello {0.author.mention}'.format(message)
+        await client.send_message(message.channel, msg)
 
 @client.event
 async def on_ready():
