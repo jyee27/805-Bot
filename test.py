@@ -35,9 +35,9 @@ def get_message():
             premsg = '\t\t' + premsg
             for img in s.find_all('img'):
                 if img['alt'] == 'Vegetarian':
-                    premsg += ' [Vegetarian]'
+                    premsg += ' <:vegetarian:499693084117041153>'
                 if img['alt'] == 'Vegan':
-                    premsg += ' [Vegan]'
+                    premsg += ' <:vegan:499693108825554945>'
         premsg += '\n'
         msg += premsg
     return msg

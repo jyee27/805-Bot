@@ -17,7 +17,7 @@ url = "https://menus.calpolycorporation.org/805kitchen/"
 # for item in soup.find_all('p'):
 #     print(item.format())
 
-TOKEN = 'insert token here'
+TOKEN = 'insert bot token here'
 
 client = discord.Client()
 
@@ -28,8 +28,9 @@ async def on_message(message):
         return
 
     if message.content.startswith('!805'):
-        msg = get_message()
-        await client.send_message(message.channel, msg)
+        msgs = get_message_list()
+        for msg in msgs:
+            await client.send_message(message.channel, msg)
 
 
 async def scheduled_message():
@@ -38,8 +39,9 @@ async def scheduled_message():
     while not client.is_closed:
         t = datetime.datetime.now()
         if t.hour == 8 and t.minute == 5:
-            msg = get_message()
-            await client.send_message(channel, msg)
+            msgs = get_message_list()
+            for msg in msgs:
+                await client.send_message(channel, msg)
         await asyncio.sleep(60)
 
 
@@ -51,10 +53,11 @@ async def on_ready():
     print('------')
 
 
-def get_message():
+def get_message_list():
     r = requests.get(url)
     soup = BeautifulSoup(r.text, 'html.parser')
     msg = ''
+    lst = []
     for s in soup.find_all(['h2', 'h4', 'p']):
         premsg = s.get_text()
         premsg = premsg.replace('\t', '')
@@ -68,12 +71,17 @@ def get_message():
             premsg = '\t\t' + premsg
             for img in s.find_all('img'):
                 if img['alt'] == 'Vegetarian':
-                    premsg += ' [Vegetarian]'
+                    premsg += ' <:vegetarian:499693084117041153>'
                 if img['alt'] == 'Vegan':
-                    premsg += ' [Vegan]'
+                    premsg += ' <:vegan:499693108825554945>'
         premsg += '\n'
         msg += premsg
-    return msg
+        if len(msg) > 1900:
+            lst.append(msg)
+            msg = ''
+    if len(msg) > 0:
+        lst.append(msg)
+    return lst
 
 
 client.loop.create_task(scheduled_message())
