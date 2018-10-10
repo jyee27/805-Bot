@@ -1,6 +1,7 @@
 # Work with Python 3.6
 import discord
 import requests
+import re
 from bs4 import BeautifulSoup
 
 url = "https://menus.calpolycorporation.org/805kitchen/"
@@ -14,7 +15,7 @@ soup = BeautifulSoup(r.text, 'html.parser')
 # for item in soup.find_all('p'):
 #     print(item.format())
 
-TOKEN = 'XX'
+TOKEN = 'XXXXX'
 
 client = discord.Client()
 
@@ -30,8 +31,9 @@ async def on_message(message):
             msg += s.get_text().format(message)
             msg += '\n'
             # msg = 'Hello {0.author.mention}'.format(message)
+        msg = msg.replace('\t','')
+        msg = re.sub('\n+', '\n', msg)
         await client.send_message(message.channel, msg)
-
 @client.event
 async def on_ready():
     print('Logged in as')
