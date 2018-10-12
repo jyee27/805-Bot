@@ -18,10 +18,17 @@ url = "https://menus.calpolycorporation.org/805kitchen/"
 #     print(item.format())
 
 
-def get_message():
+def get_message_list():
     r = requests.get(url)
     soup = BeautifulSoup(r.text, 'html.parser')
     msg = ''
+    lst = []
+    title = "***805 Kitchen Menu***\n"
+    for s in soup.find_all('h3'):
+        if s.get_text() != 'Legend':
+            title += "*" + s.get_text() + "*"
+    title += "\n"
+    lst.append(title)
     for s in soup.find_all(['h2', 'h4', 'p']):
         premsg = s.get_text()
         premsg = premsg.replace('\t', '')
@@ -40,7 +47,16 @@ def get_message():
                     premsg += ' <:vegan:499693108825554945>'
         premsg += '\n'
         msg += premsg
-    return msg
+        if len(msg) > 1900:
+            lst.append(msg)
+            msg = ''
+    if len(msg) > 0:
+        lst.append(msg)
+    return lst
 
 
-print(get_message())
+r = requests.get(url)
+soup = BeautifulSoup(r.text, 'html.parser')
+print(soup)
+
+print(get_message_list())

@@ -17,9 +17,10 @@ url = "https://menus.calpolycorporation.org/805kitchen/"
 # for item in soup.find_all('p'):
 #     print(item.format())
 
-TOKEN = 'insert bot token here'
+TOKEN = 'insert token here'
 
 client = discord.Client()
+
 
 @client.event
 async def on_message(message):
@@ -58,6 +59,12 @@ def get_message_list():
     soup = BeautifulSoup(r.text, 'html.parser')
     msg = ''
     lst = []
+    title = "***805 Kitchen Menu***\n"
+    for s in soup.find_all('h3'):
+        if s.get_text() != 'Legend':
+            title += "*" + s.get_text() + "*"
+    title += "\n"
+    lst.append(title)
     for s in soup.find_all(['h2', 'h4', 'p']):
         premsg = s.get_text()
         premsg = premsg.replace('\t', '')
