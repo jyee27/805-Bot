@@ -36,7 +36,7 @@ async def on_message(message):
 
 async def scheduled_message():
     await client.wait_until_ready()
-    channel = discord.Object(id='insert channel here')
+    channel = discord.Object(id='insert channel id here')
     while not client.is_closed:
         t = datetime.datetime.now()
         if t.hour == 8 and t.minute == 5:
