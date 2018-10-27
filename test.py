@@ -127,7 +127,7 @@ def get_message_embed_list():
                     premsg += ' <:vegan:499693108825554945>'
             fval += premsg + '\n'
     embed.add_field(name=fname, value=fval, inline=False)
-    embed.timestamp = datetime.datetime.now()
+    embed.timestamp = datetime.datetime.utcnow()
     lst.append(embed)
     return lst
 
