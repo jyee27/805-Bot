@@ -28,10 +28,14 @@ async def on_message(message):
     if message.author == client.user:
         return
 
-    if message.content.startswith('!805'):
+    if message.content.startswith('!805t'):
         msgs = get_message_list()
         for msg in msgs:
             await client.send_message(message.channel, msg)
+    elif message.content.startswith('!805'):
+        emblst = get_message_embed_list()
+        for emb in emblst:
+            await client.send_message(message.channel, embed=emb)
 
 
 async def scheduled_message():
@@ -88,6 +92,47 @@ def get_message_list():
             msg = ''
     if len(msg) > 0:
         lst.append(msg)
+    return lst
+
+
+def get_message_embed_list():
+    r = requests.get(url)
+    soup = BeautifulSoup(r.text, 'html.parser')
+    ttl = "***805 Kitchen Menu***"
+    embed = discord.Embed(title=ttl)
+    lst = []
+    fname = ''
+    fval = ''
+    for s in soup.find_all('h3'):
+        if s.get_text() != 'Legend':
+            embed.description = s.get_text()
+    lst.append(embed)
+    embed = discord.Embed(title='')
+    for s in soup.find_all(['h2', 'h4', 'p']):
+        premsg = s.get_text()
+        premsg = premsg.replace('\t', '')
+        premsg = re.sub('\n+', '', premsg)
+        premsg = premsg.strip()
+        if s.name == 'h2':
+            if len(embed.title) > 0:
+                lst.append(embed)
+                embed = discord.Embed(title='')
+            embed.title = premsg
+        elif s.name == 'h4':
+            if len(fname) > 0:
+                embed.add_field(name=fname, value=fval, inline=False)
+                fval = ''
+            fname = premsg
+        elif s.name == 'p':
+            for img in s.find_all('img'):
+                if img['alt'] == 'Vegetarian':
+                    premsg += ' <:vegetarian:499693084117041153>'
+                if img['alt'] == 'Vegan':
+                    premsg += ' <:vegan:499693108825554945>'
+            fval += premsg + '\n'
+    embed.add_field(name=fname, value=fval, inline=False)
+    embed.timestamp = datetime.datetime.now()
+    lst.append(embed)
     return lst
 
 
