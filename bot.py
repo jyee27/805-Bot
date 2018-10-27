@@ -98,7 +98,7 @@ def get_message_list():
 def get_message_embed_list():
     r = requests.get(url)
     soup = BeautifulSoup(r.text, 'html.parser')
-    ttl = "***805 Kitchen Menu***"
+    ttl = "**805 Kitchen Menu**"
     embed = discord.Embed(title=ttl)
     lst = []
     fname = ''
@@ -117,7 +117,7 @@ def get_message_embed_list():
             if len(embed.title) > 0:
                 lst.append(embed)
                 embed = discord.Embed(title='')
-            embed.title = premsg
+            embed.title = '**' + premsg + '**'
         elif s.name == 'h4':
             if len(fname) > 0:
                 embed.add_field(name=fname, value=fval, inline=False)
