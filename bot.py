@@ -44,9 +44,9 @@ async def scheduled_message():
     while not client.is_closed:
         t = datetime.datetime.now()
         if t.hour == 8 and t.minute == 5:
-            msgs = get_message_list()
-            for msg in msgs:
-                await client.send_message(channel, msg)
+            emblst = get_message_embed_list()
+            for emb in emblst:
+                await client.send_message(channel, embed=emb)
         await asyncio.sleep(60)
 
 
