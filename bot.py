@@ -47,6 +47,7 @@ async def scheduled_message():
             emblst = get_message_embed_list()
             for emb in emblst:
                 await client.send_message(channel, embed=emb)
+            await asyncio.sleep(84600) # wait 23 hours and 30 minutes before checking again
         await asyncio.sleep(60)
 
 
@@ -134,7 +135,14 @@ def get_message_embed_list():
     embed.timestamp = datetime.datetime.utcnow()
     lst.append(embed)
     return lst
+    
+    
+async def dontcrash(): # ping discord every 50 seconds
+    channels = client.get_all_channels()
+    asyncio.sleep(50)
+    
 
-
-client.loop.create_task(scheduled_message())
-client.run(TOKEN)
+if __name__ == "__main__":
+    client.loop.create_task(scheduled_message())
+    client.loop.create_task(dontcrash())
+    client.run(TOKEN)
