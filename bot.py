@@ -18,6 +18,7 @@ url = "https://menus.calpolycorporation.org/805kitchen/"
 #     print(item.format())
 
 TOKEN = 'insert token here'
+channel_id = 'insert channel id here'
 
 client = discord.Client()
 
@@ -40,7 +41,7 @@ async def on_message(message):
 
 async def scheduled_message():
     await client.wait_until_ready()
-    channel = discord.Object(id='insert channel id here')
+    channel = discord.Object(id=channel_id)
     while not client.is_closed:
         t = datetime.datetime.now()
         if t.hour == 8 and t.minute == 5:
@@ -87,10 +88,10 @@ def get_message_list():
                 if img['alt'] == 'Vegan':
                     premsg += ' <:vegan:499693108825554945>'
         premsg += '\n'
-        msg += premsg
-        if len(msg) > 1900:
+        if len(msg) + len(premsg) > 2000:
             lst.append(msg)
-            msg = ''
+            msg = premsg
+        msg += premsg
     if len(msg) > 0:
         lst.append(msg)
     return lst
@@ -109,6 +110,8 @@ def get_message_embed_list():
             embed.description = s.get_text()
     lst.append(embed)
     embed = discord.Embed(title='')
+    embed_length = 0
+    num_fields = 0
     for s in soup.find_all(['h2', 'h4', 'p']):
         premsg = s.get_text()
         premsg = premsg.replace('\t', '')
@@ -117,11 +120,14 @@ def get_message_embed_list():
         if s.name == 'h2':
             if len(embed.title) > 0:
                 lst.append(embed)
+                embed_length = 0
                 embed = discord.Embed(title='')
             embed.title = '**' + premsg + '**'
+            embed_length += len(premsg) + 4
         elif s.name == 'h4':
-            if len(fname) > 0:
+            if len(fname) > 0 and len(fval) > 0:
                 embed.add_field(name=fname, value=fval, inline=False)
+                embed_length += len(fname) + len(fval)
                 fval = ''
             fname = premsg
         elif s.name == 'p':
@@ -131,6 +137,10 @@ def get_message_embed_list():
                 if img['alt'] == 'Vegan':
                     premsg += ' <:vegan:499693108825554945>'
             fval += premsg + '\n'
+        if embed_length + len(fname) + len(fval) > 5500:
+            lst.append(embed)
+            embed = discord.Embed(title='')
+            embed_length = 0
     embed.add_field(name=fname, value=fval, inline=False)
     embed.timestamp = datetime.datetime.utcnow()
     lst.append(embed)
