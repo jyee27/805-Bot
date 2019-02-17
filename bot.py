@@ -41,7 +41,7 @@ async def on_message(message):
 
 async def scheduled_message():
     await client.wait_until_ready()
-    channel = discord.Object(id=channel_id)
+    channel = discord.Object(id=CHANNEL_ID)
     while not client.is_closed:
         t = datetime.datetime.now()
         if t.hour == 8 and t.minute == 5:
@@ -125,7 +125,9 @@ def get_message_embed_list():
             embed.title = '**' + premsg + '**'
             embed_length += len(premsg) + 4
         elif s.name == 'h4':
-            if len(fname) > 0 and len(fval) > 0:
+            if len(fname) > 0:
+                if len(fval) == 0:
+                    fval += '[empty]'
                 embed.add_field(name=fname, value=fval, inline=False)
                 embed_length += len(fname) + len(fval)
                 fval = ''
@@ -141,7 +143,10 @@ def get_message_embed_list():
             lst.append(embed)
             embed = discord.Embed(title='')
             embed_length = 0
-    embed.add_field(name=fname, value=fval, inline=False)
+    if len(fname) > 0:
+        if len(fval) == 0:
+            fval += '[empty]'
+        embed.add_field(name=fname, value=fval, inline=False)
     embed.timestamp = datetime.datetime.utcnow()
     lst.append(embed)
     return lst
