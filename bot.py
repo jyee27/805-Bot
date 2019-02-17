@@ -18,7 +18,7 @@ url = "https://menus.calpolycorporation.org/805kitchen/"
 #     print(item.format())
 
 TOKEN = 'insert token here'
-channel_id = 'insert channel id here'
+CHANNEL_ID = 'insert channel id here'
 
 client = discord.Client()
 
