@@ -125,13 +125,13 @@ def get_message_embed_list():
                 embed_length = 0
                 embed = discord.Embed(title='')
                 current_embed_empty = True
-            embed.title = '*' + premsg + '*'
+            embed.title = '**' + premsg + '**'
             embed_length += len(premsg) + 4
         elif s.name == 'h4':
             if len(fname) > 0:
                 if len(fval) == 0:
                     fval += '[empty]'
-                else
+                else:
                     current_embed_empty = False
                 embed.add_field(name=fname, value=fval, inline=False)
                 embed_length += len(fname) + len(fval)
