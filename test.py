@@ -157,6 +157,4 @@ async def dontcrash(): # ping discord every 50 seconds
     
 
 if __name__ == "__main__":
-    client.loop.create_task(scheduled_message())
-    client.loop.create_task(dontcrash())
-    client.run(TOKEN)
+    print(get_message_embed_list())

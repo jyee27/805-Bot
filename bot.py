@@ -105,6 +105,7 @@ def get_message_embed_list():
     lst = []
     fname = ''
     fval = ''
+    current_embed_empty = True
     for s in soup.find_all('h3'):
         if s.get_text() != 'Legend':
             embed.description = s.get_text()
@@ -119,15 +120,19 @@ def get_message_embed_list():
         premsg = premsg.strip()
         if s.name == 'h2':
             if len(embed.title) > 0:
-                lst.append(embed)
+                if not current_embed_empty:
+                   lst.append(embed)
                 embed_length = 0
                 embed = discord.Embed(title='')
-            embed.title = '**' + premsg + '**'
+                current_embed_empty = True
+            embed.title = '*' + premsg + '*'
             embed_length += len(premsg) + 4
         elif s.name == 'h4':
             if len(fname) > 0:
                 if len(fval) == 0:
                     fval += '[empty]'
+                else
+                    current_embed_empty = False
                 embed.add_field(name=fname, value=fval, inline=False)
                 embed_length += len(fname) + len(fval)
                 fval = ''
@@ -140,15 +145,18 @@ def get_message_embed_list():
                     premsg += ' <:vegan:499693108825554945>'
             fval += premsg + '\n'
         if embed_length + len(fname) + len(fval) > 5500:
-            lst.append(embed)
+            if not current_embed_empty:
+                lst.append(embed)
             embed = discord.Embed(title='')
             embed_length = 0
+            current_embed_empty = True
     if len(fname) > 0:
         if len(fval) == 0:
             fval += '[empty]'
         embed.add_field(name=fname, value=fval, inline=False)
     embed.timestamp = datetime.datetime.utcnow()
-    lst.append(embed)
+    if not current_embed_empty:
+        lst.append(embed)
     return lst
     
     
