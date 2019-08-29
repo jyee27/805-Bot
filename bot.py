@@ -133,18 +133,23 @@ def get_message_embed_list():
                     fval += '[empty]'
                 else:
                     current_embed_empty = False
-                embed.add_field(name=fname, value=fval, inline=False)
                 embed_length += len(fname) + len(fval)
+                embed.add_field(name=fname, value=fval, inline=False)
                 fval = ''
             fname = premsg
         elif s.name == 'p':
+            if(len(fval) + len(premsg) + 64 > 1024):
+                embed.add_field(name=fname, value=fval, inline=False)
+                fval = ''
+                fname = '--'
             for img in s.find_all('img'):
                 if img['alt'] == 'Vegetarian':
                     premsg += ' <:vegetarian:499693084117041153>'
                 if img['alt'] == 'Vegan':
                     premsg += ' <:vegan:499693108825554945>'
             fval += premsg + '\n'
-        if embed_length + len(fname) + len(fval) > 5500:
+        if embed_length + len(fname) + len(fval) > 5500 or len(embed.fields) > 23:
+            # Add current embed to list and start a new one
             if not current_embed_empty:
                 lst.append(embed)
             embed = discord.Embed(title='')
