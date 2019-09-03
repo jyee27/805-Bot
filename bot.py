@@ -1,12 +1,13 @@
 # Work with Python 3.6
 import discord
-import requests
+import logging
+import aiohttp
 import re
 import datetime
 import asyncio
 from bs4 import BeautifulSoup
 
-url = "https://menus.calpolycorporation.org/805kitchen/"
+URL = "https://menus.calpolycorporation.org/805kitchen/"
 # hdr = {'User-Agent':'Mozilla/5.0',
 #        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'}
 # r = requests.get(url)
@@ -20,6 +21,8 @@ url = "https://menus.calpolycorporation.org/805kitchen/"
 TOKEN = 'insert token here'
 CHANNEL_ID = 'insert channel id here'
 
+LOGGING = False
+
 client = discord.Client()
 
 
@@ -28,13 +31,12 @@ async def on_message(message):
     # we do not want the bot to reply to itself
     if message.author == client.user:
         return
-
     if message.content.startswith('!805t'):
-        msgs = get_message_list()
+        msgs = await get_message_list()
         for msg in msgs:
             await client.send_message(message.channel, msg)
     elif message.content.startswith('!805'):
-        emblst = get_message_embed_list()
+        emblst = await get_message_embed_list()
         for emb in emblst:
             await client.send_message(message.channel, embed=emb)
 
@@ -45,7 +47,7 @@ async def scheduled_message():
     while not client.is_closed:
         t = datetime.datetime.now()
         if t.hour == 8 and t.minute == 5:
-            emblst = get_message_embed_list()
+            emblst = await get_message_embed_list()
             for emb in emblst:
                 await client.send_message(channel, embed=emb)
             await asyncio.sleep(84600) # wait 23 hours and 30 minutes before checking again
@@ -60,9 +62,14 @@ async def on_ready():
     print('------')
 
 
-def get_message_list():
-    r = requests.get(url)
-    soup = BeautifulSoup(r.text, 'html.parser')
+async def fetch(url):
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as r:
+            return await r.text()
+
+async def get_message_list():
+    r = await fetch(URL)
+    soup = BeautifulSoup(r, 'html.parser')
     msg = ''
     lst = []
     title = "***805 Kitchen Menu***\n"
@@ -97,9 +104,9 @@ def get_message_list():
     return lst
 
 
-def get_message_embed_list():
-    r = requests.get(url)
-    soup = BeautifulSoup(r.text, 'html.parser')
+async def get_message_embed_list():
+    r = await fetch(URL)
+    soup = BeautifulSoup(r, 'html.parser')
     ttl = "**805 Kitchen Menu**"
     embed = discord.Embed(title=ttl)
     lst = []
@@ -171,6 +178,13 @@ async def dontcrash(): # ping discord every 50 seconds
     
 
 if __name__ == "__main__":
+    if LOGGING:
+        logger = logging.getLogger('discord')
+        logger.setLevel(logging.DEBUG)
+        handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
+        handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+        logger.addHandler(handler)
+    
     client.loop.create_task(scheduled_message())
     client.loop.create_task(dontcrash())
     client.run(TOKEN)
