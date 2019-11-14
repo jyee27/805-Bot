@@ -1,4 +1,3 @@
-# Work with Python 3.6
 import discord
 import logging
 import aiohttp
@@ -8,37 +7,34 @@ import asyncio
 from bs4 import BeautifulSoup
 
 URL = "https://menus.calpolycorporation.org/805kitchen/"
-# hdr = {'User-Agent':'Mozilla/5.0',
-#        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'}
-# r = requests.get(url)
-# soup = BeautifulSoup(r.text, 'html.parser')
-# for s in soup.find_all('p'):
-#     print(s.get_text())
-# s = ''
-# for item in soup.find_all('p'):
-#     print(item.format())
 
-TOKEN = 'insert token here'
 CHANNEL_ID = 'insert channel id here'
 
 LOGGING = False
 
 client = discord.Client()
 
+def read_token():
+    with open("token.txt", "r") as f:
+        lines = f.readlines()
+        return lines[0].strip()
+
+token = read_token()
 
 @client.event
 async def on_message(message):
+    channel = message.channel
     # we do not want the bot to reply to itself
     if message.author == client.user:
         return
     if message.content.startswith('!805t'):
         msgs = await get_message_list()
         for msg in msgs:
-            await client.send_message(message.channel, msg)
+            await channel.send(msg)
     elif message.content.startswith('!805'):
         emblst = await get_message_embed_list()
         for emb in emblst:
-            await client.send_message(message.channel, embed=emb)
+            await channel.send(embed=emb)
 
 
 async def scheduled_message():
@@ -119,7 +115,6 @@ async def get_message_embed_list():
     lst.append(embed)
     embed = discord.Embed(title='')
     embed_length = 0
-    num_fields = 0
     for s in soup.find_all(['h2', 'h4', 'p']):
         premsg = s.get_text()
         premsg = premsg.replace('\t', '')
@@ -147,6 +142,7 @@ async def get_message_embed_list():
         elif s.name == 'p':
             if(len(fval) + len(premsg) + 64 > 1024):
                 embed.add_field(name=fname, value=fval, inline=False)
+                embed_length += len(fname) + len(fval)
                 fval = ''
                 fname = '--'
             for img in s.find_all('img'):
@@ -174,7 +170,7 @@ async def get_message_embed_list():
     
 async def dontcrash(): # ping discord every 50 seconds
     channels = client.get_all_channels()
-    asyncio.sleep(50)
+    await asyncio.sleep(50)
     
 
 if __name__ == "__main__":
@@ -185,6 +181,6 @@ if __name__ == "__main__":
         handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
         logger.addHandler(handler)
     
-    client.loop.create_task(scheduled_message())
+    # client.loop.create_task(scheduled_message())
     client.loop.create_task(dontcrash())
-    client.run(TOKEN)
+    client.run(token)
