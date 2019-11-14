@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 
 URL = "https://menus.calpolycorporation.org/805kitchen/"
 
-CHANNEL_ID = 'insert channel id here'
+CHANNEL_ID = -1
 
 LOGGING = False
 
@@ -39,7 +39,7 @@ async def on_message(message):
 
 async def scheduled_message():
     await client.wait_until_ready()
-    channel = discord.Object(id=CHANNEL_ID)
+    channel = client.get_channel(CHANNEL_ID)
     while not client.is_closed:
         t = datetime.datetime.now()
         if t.hour == 8 and t.minute == 5:
