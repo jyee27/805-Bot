@@ -45,7 +45,7 @@ async def scheduled_message():
         if t.hour == 8 and t.minute == 5:
             emblst = await get_message_embed_list()
             for emb in emblst:
-                await client.send_message(channel, embed=emb)
+                await channel.send(embed=emb)
             await asyncio.sleep(84600) # wait 23 hours and 30 minutes before checking again
         await asyncio.sleep(60)
 
